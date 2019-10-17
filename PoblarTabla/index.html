@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+    <title>Consulta MySQL</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"/>
+    <style>
+        body
+        {
+            height: 100%;
+            width: 100%;
+        }
+        #InputContainer
+        {
+            width: 70vw;
+            margin:auto;
+            margin-top:2%;
+            margin-bottom:2%;
+        }
+        tbody
+        {
+            max-height: 30vh;
+            overflow-y: auto;
+        }
+        #BtnEnviar
+        {
+            height: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div id="MainContainer">
+        <div id="InputContainer" class="row">
+            <div class="col">
+                <input id="OrderBu" type="text" disabled class="form-control" placeholder="Ordenamiento">
+            </div>
+            <div class="col">
+                <input id="CantRegistros" type="text" disabled class="form-control" placeholder="Cantidad">
+            </div>
+            <button id="BtnEnviar" class="col">Hacer Consulta</button>   
+            <img src="tick.gif" id="TickImg" style="height: 50px;display:none;margin-left: 2%;margin-top:-1%;">     
+            <img src="CrossImg.gif" id="CrossImg" style="height: 50px;display:none;margin-left: 2%;margin-top:-1%;">     
+        </div>
+        <div>
+            <table class="table table-bordered table-dark">
+                <thead>
+                    <th>IdUsuario</th>
+                    <th>NombreUsuario</th>
+                    <th>LoginUsuario</th>
+                    <th>PasswordUsuario</th>
+                </thead>
+                <tbody id="TableBody">
+                    <tr>
+                        <td>asd</td>
+                        <td>asd</td>
+                        <td>asd</td>
+                        <td>asd</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Button trigger modal -->
+    <button id="ToggleModal" hidden type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    </button>
+      
+      <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-backdrop="false">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">            
+            <div class="modal-body">
+                <img src="cargando.gif" style="height:100%;width:100%;margin:auto;">
+                <button type="button" id="HideModal" class="btn btn-secondary" data-dismiss="modal" hidden>Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function(){
+        $("#BtnEnviar").click(function(){
+            $("#ToggleModal").click();
+            $("#MainContainer").css("pointer-events","none");
+            $("#MainContainer").css("opacity",0.3);
+            $("#TickImg").css("display","none");
+            var order;
+            if($("#OrderBy").val()!=null && $("#OrderBy").val()!="")order = $("#OrderBy").val();
+            else order="IdUsuario";
+            $.ajax({
+                type:"post",
+                url: "consulta.php", 
+                data:{OrderBy:order},                
+                success: function(result){                    
+                    $("#MainContainer").css("pointer-events","auto");
+                    $("#MainContainer").css("opacity",1);
+                    $("#HideModal").click();
+                   // $("#TickImg").css("display","");
+                   $("#CrossImg").css("display","");
+                    $("#cantregistros").html("Respuesta Exitosa");                    
+                },
+                error: function(result){
+                    $("#CrossImg").css("display","");
+                }                
+            });
+        });         
+        LoadMethod();        
+    });
+    function LoadMethod(){
+        var list = document.getElementsByClassName("th");
+        for (var i = 0; i < list.length; i++) {
+            list[i].addEventListener("click", function() {
+                $("#OrderBy").innerHTML(list[i].innerHTML);
+                console.log(list[i].innerHTML); 
+            }, false);
+        }
+    }
+</script>
+</html>

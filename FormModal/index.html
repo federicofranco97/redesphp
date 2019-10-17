@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="script.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <style>
+            body
+            {
+                height: 100%;
+                width: 100%;
+                color:white;
+                background-color: black;
+            }
+            #mainContainer
+            {
+                width: 40vw;
+                margin-top:5%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            button
+            {
+                margin-top: 2%;                       
+            }
+            #modalContainer
+            {
+                position:fixed;
+                width:500px;
+                height:600px;
+                margin:-300px auto auto -250px;
+                padding: 25px;
+                top:80%;
+                left:50%;
+                text-align:center;
+            }
+            #Container
+            {
+                width: 100%;
+                margin: auto;
+                padding: 20px;
+                background-color: red;
+                border: 2px solid orange;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="mainContainer">
+            <div>
+                <h2>Click en el boton para abrir el modal</h2>
+                <button class="btn btn-dark" id="btnMostrar">Mostrar modal</button>
+            </div>
+            <img src="giphy.gif" style="height: 200px;width: 200px;margin-top:5%;">
+        </div>
+        <div id="modalContainer">
+            <div id="Container"> 
+                <form> 
+                    <div style="height: 100%;margin-left: auto;margin-right: auto;">
+                        <label>Nombre: </label>
+                        <select id="idSelect">
+                        </select>
+                        <input type="text" hidden="hidden" name="nombre" id="NombreInput">
+                    </div>
+                    <div>
+                        <label>Año de nacimiento:</label>
+                        <input id="NacimientoInput" name="fnac">
+                    </div>
+                    <div>
+                        <label>Saldo:</label>
+                        <input id="SaldoInput" name="saldo">
+                    </div>
+                    <div>
+                        <input type="button" value="Enviar Informacion" id="BtnEnviarJSON">
+                        <input type="reset" id="btnModalClose" value="Cerrar Modal">
+                    </div>
+                </form>
+                <div style="width: inherit">
+                    <label id="ContenidoJson" style="width: 100%;;word-wrap: break-word;"> Aca va el JSON</label>
+                </div>
+            </div>        
+        </div>
+    </body>
+    <script>
+        $(document).ready(function(){
+            CargarTodo();
+            $("#BtnEnviarJSON").click(function(){
+                $("#ContenidoJson").html("Esperando respuesta");
+                $.ajax({
+                    type:"post",
+                    url: "respuesta.php", 
+                    data:{NombreInput : $("#NombreInput").val(), NacimientoInput : $("#NacimientoInput").val(),SaldoInput : $("#SaldoInput").val()}, 
+                    success: function(result){                    
+                        $("#ContenidoJson").html("Resultado: " + result);
+                    }
+                });
+            });
+        });
+    </script>    
+</html>
