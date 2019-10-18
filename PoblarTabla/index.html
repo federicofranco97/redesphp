@@ -16,6 +16,7 @@
         {
             height: 100%;
             width: 100%;
+            color:white;
         }
         #InputContainer
         {
@@ -26,43 +27,43 @@
         }
         tbody
         {
-            max-height: 30vh;
+            height: 25vh;
             overflow-y: auto;
         }
         #BtnEnviar
         {
             height: 40px;
         }
+        th
+        {
+            cursor: pointer;
+        }
     </style>
 </head>
-<body>
+<body class="bg-danger">
     <div id="MainContainer">
         <div id="InputContainer" class="row">
             <div class="col">
-                <input id="OrderBu" type="text" disabled class="form-control" placeholder="Ordenamiento">
+                <p id="OrderBy" type="text" disabled class="form-control">IdUsuario</p>
+                <small>Ordenado por</small>
             </div>
             <div class="col">
-                <input id="CantRegistros" type="text" disabled class="form-control" placeholder="Cantidad">
+                <p id="CantRegistros" type="text" disabled class="form-control"></p>
+                <small>Cantidad de registros</small>
             </div>
             <button id="BtnEnviar" class="col">Hacer Consulta</button>   
             <img src="tick.gif" id="TickImg" style="height: 50px;display:none;margin-left: 2%;margin-top:-1%;">     
-            <img src="CrossImg.gif" id="CrossImg" style="height: 50px;display:none;margin-left: 2%;margin-top:-1%;">     
+            <img src="CrossImg.gif" id="CrossImg" style="height: 70px;display:none;margin-left: 2%;margin-top:-1%;">     
         </div>
         <div>
-            <table class="table table-bordered table-dark">
+            <table class="table table-bordered table-dark table-fixed">
                 <thead>
-                    <th>IdUsuario</th>
-                    <th>NombreUsuario</th>
-                    <th>LoginUsuario</th>
-                    <th>PasswordUsuario</th>
+                    <th onclick="PlaceAttribute(this)">IdUsuario</th>
+                    <th onclick="PlaceAttribute(this)">NombreUsuario</th>
+                    <th onclick="PlaceAttribute(this)">LoginUsuario</th>
+                    <th onclick="PlaceAttribute(this)">PasswordUsuario</th>
                 </thead>
                 <tbody id="TableBody">
-                    <tr>
-                        <td>asd</td>
-                        <td>asd</td>
-                        <td>asd</td>
-                        <td>asd</td>
-                    </tr>
                 </tbody>
             </table>
         </div>
@@ -88,12 +89,11 @@
     $(document).ready(function(){
         $("#BtnEnviar").click(function(){
             $("#ToggleModal").click();
+            $("#TableBody").empty();
             $("#MainContainer").css("pointer-events","none");
             $("#MainContainer").css("opacity",0.3);
             $("#TickImg").css("display","none");
-            var order;
-            if($("#OrderBy").val()!=null && $("#OrderBy").val()!="")order = $("#OrderBy").val();
-            else order="IdUsuario";
+            var order=$("#OrderBy").html();
             $.ajax({
                 type:"post",
                 url: "consulta.php", 
@@ -102,25 +102,24 @@
                     $("#MainContainer").css("pointer-events","auto");
                     $("#MainContainer").css("opacity",1);
                     $("#HideModal").click();
-                   // $("#TickImg").css("display","");
-                   $("#TickImg").css("display","");
-                    $("#cantregistros").html("Respuesta Exitosa");                    
+                    $("#TickImg").css("display","");                    
+                    var ObjRespuesta = JSON.parse(result);
+                    $("#CantRegistros").html(ObjRespuesta.length);
+                    ObjRespuesta.forEach(element => {
+                        $("#TableBody").append("<tr><td>"+element.IdUsuario+"</td><td>"+element.NombreUsuario
+                        +"</td><td>"+element.LoginUsuario+"</td><td>"+element.PasswordUsuario+"</td> </tr>");
+                    });                
                 },
                 error: function(result){
                     $("#CrossImg").css("display","");
                 }                
             });
         });         
-        LoadMethod();        
     });
-    function LoadMethod(){
-        var list = document.getElementsByClassName("th");
-        for (var i = 0; i < list.length; i++) {
-            list[i].addEventListener("click", function() {
-                $("#OrderBy").innerHTML(list[i].innerHTML);
-                console.log(list[i].innerHTML); 
-            }, false);
-        }
+
+    function PlaceAttribute(obj){
+        $("#OrderBy").html(obj.innerHTML);
+        $("#BtnEnviar").click();
     }
 </script>
 </html>
