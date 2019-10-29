@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+    <title>Consulta MySQL</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"/>
+    <style>
+        body
+        {
+            height: 100%;
+            width: 100%;
+            color:white;
+        }
+        #InputContainer
+        {
+            width: 70vw;
+            margin:auto;
+            margin-top:2%;
+            margin-bottom:2%;
+        }
+        tbody
+        {
+            height: 25vh;
+            overflow-y: auto;
+        }
+        #BtnEnviar
+        {
+            height: 40px;
+        }
+        th
+        {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-danger">
+    <div id="MainContainer">
+        <div id="InputContainer" class="row">
+            <div class="col">
+                <p id="OrderBy" type="text" disabled class="form-control">IdUsuario</p>
+                <small>Ordenado por</small>
+            </div>
+            <div class="col">
+                <p id="CantRegistros" type="text" disabled class="form-control"></p>
+                <small>Cantidad de registros</small>
+            </div>
+            <button id="BtnEnviar" class="col">Hacer Consulta</button>   
+            <img src="tick.gif" id="TickImg" style="height: 50px;display:none;margin-left: 2%;margin-top:-1%;">     
+            <img src="CrossImg.gif" id="CrossImg" style="height: 70px;display:none;margin-left: 2%;margin-top:-1%;">     
+        </div>
+        <div>
+            <table class="table table-bordered table-dark table-fixed">
+                <thead>
+                    <th onclick="PlaceAttribute(this)">IdUsuario</th>
+                    <th onclick="PlaceAttribute(this)">NombreUsuario</th>
+                    <th onclick="PlaceAttribute(this)">LoginUsuario</th>
+                    <th onclick="PlaceAttribute(this)">PasswordUsuario</th>
+                </thead>
+                <tbody id="TableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Button trigger modal -->
+    <button id="ToggleModal" hidden type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    </button>
+      
+      <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-backdrop="false">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">            
+            <div class="modal-body">
+                <img src="cargando.gif" style="height:100%;width:100%;margin:auto;">
+                <button type="button" id="HideModal" class="btn btn-secondary" data-dismiss="modal" hidden>Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function(){
+        $("#BtnEnviar").click(function(){
+            $("#ToggleModal").click();
+            $("#TableBody").empty();
+            $("#MainContainer").css("pointer-events","none");
+            $("#MainContainer").css("opacity",0.3);
+            $("#TickImg").css("display","none");
+            var order=$("#OrderBy").html();
+            $.ajax({
+                type:"post",
+                url: "consulta.php", 
+                data:{OrderBy:order},                
+                success: function(result){                    
+                    $("#MainContainer").css("pointer-events","auto");
+                    $("#MainContainer").css("opacity",1);
+                    $("#HideModal").click();
+                    var ObjRespuesta = JSON.parse(result);
+                    $("#CantRegistros").html(ObjRespuesta.length);
+                    ObjRespuesta.forEach(element => {
+                        $("#TableBody").append("<tr><td>"+element.IdUsuario+"</td><td>"+element.NombreUsuario
+                        +"</td><td>"+element.LoginUsuario+"</td><td>"+element.PasswordUsuario+"</td> </tr>");
+                    });                
+                },
+            });
+        });         
+    });
+
+    function PlaceAttribute(obj){
+        $("#OrderBy").html(obj.innerHTML);
+        $("#BtnEnviar").click();
+    }
+</script>
+</html>
