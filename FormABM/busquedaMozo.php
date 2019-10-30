@@ -1,11 +1,8 @@
 <?php
-    $orden = $_POST["OrderBy"];
-    if($orden == ""){
-        $orden="NroMesa";
-    }
     sleep(3);
+    $empleado = $_POST["NombreEmpleado"];
     $mysqli = new mysqli("localhost","root","","ubd1");
-    $query = "select * from mesa order by ".$orden;
+    $query = "select * from mesa where nombremozo='".$empleado ."'";
     $resultado = $mysqli->query($query);
     $CantidadRegistros = $resultado->num_rows;  
     $almacenSql = [];

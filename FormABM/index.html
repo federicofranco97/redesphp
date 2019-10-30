@@ -34,7 +34,7 @@
         {
             height: 40px;
         }
-        th
+        th,#DescLabel
         {
             cursor: pointer;
         }
@@ -44,24 +44,36 @@
     <div id="MainContainer">
         <div id="InputContainer" class="row">
             <div class="col">
-                <p id="OrderBy" type="text" disabled class="form-control">IdUsuario</p>
+                <p id="OrderBy" type="text" disabled class="form-control">NroMesa</p>
                 <small>Ordenado por</small>
             </div>
             <div class="col">
                 <p id="CantRegistros" type="text" disabled class="form-control"></p>
                 <small>Cantidad de registros</small>
             </div>
-            <button id="BtnEnviar" class="col">Hacer Consulta</button>   
-            <img src="tick.gif" id="TickImg" style="height: 50px;display:none;margin-left: 2%;margin-top:-1%;">     
-            <img src="CrossImg.gif" id="CrossImg" style="height: 70px;display:none;margin-left: 2%;margin-top:-1%;">     
+            <div class="col">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Filtrar por empleado
+                        </button>
+                        <div id="DropDownMenu" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        </div>
+                      </div>
+                </div>
+            <button id="BtnEnviar" class="col">Hacer Consulta</button>     
         </div>
+        
         <div>
-            <table class="table table-bordered table-dark table-fixed">
+            <table id="myTable" class="table table-bordered table-dark table-fixed">
                 <thead>
                     <th onclick="PlaceAttribute(this)">NroMesa</th>
                     <th onclick="PlaceAttribute(this)">CantPersonas</th>
-                    <th onclick="PlaceAttribute(this)">LoginUsuario</th>
-                    <th onclick="PlaceAttribute(this)">PasswordUsuario</th>
+                    <th ><label id="DescLabel" onclick="PlaceAttribute(this)">DescripcionMesa</label><input id="DescFilter" onkeyup="myFunction()"
+                         style="margin-left: 25px;width: 60%;" type="text" placeholder="Filtro">
+                        <i class="fas fa-recycle" onclick="ResetInput()" title="Click aqui para limpiar el filtro"></i> </th>
+                    <th onclick="PlaceAttribute(this)">NombreMozo</th>
+                    <th onclick="PlaceAttribute(this)">NroPuntoVenta</th>
+                    <th onclick="PlaceAttribute(this)">TotalMesa</th>
                 </thead>
                 <tbody id="TableBody">
                 </tbody>
@@ -87,12 +99,24 @@
 </body>
 <script>
     $(document).ready(function(){
+        $.ajax({
+            type:"get",
+            url: "Mozos.php", 
+            success: function(result){                                
+                var ObjRespuesta = JSON.parse(result);
+                var Appendable = "";
+                ObjRespuesta.forEach(element => {
+                    Appendable+=("<a class='dropdown-item' href='#' onclick='SearchByName(this)'>"+element.NombreUsuario+"</a>");
+                });                
+                $("#DropDownMenu").append(Appendable);
+            },
+        });
+
         $("#BtnEnviar").click(function(){
             $("#ToggleModal").click();
             $("#TableBody").empty();
             $("#MainContainer").css("pointer-events","none");
             $("#MainContainer").css("opacity",0.3);
-            $("#TickImg").css("display","none");
             var order=$("#OrderBy").html();
             $.ajax({
                 type:"post",
@@ -105,8 +129,9 @@
                     var ObjRespuesta = JSON.parse(result);
                     $("#CantRegistros").html(ObjRespuesta.length);
                     ObjRespuesta.forEach(element => {
-                        $("#TableBody").append("<tr><td>"+element.IdUsuario+"</td><td>"+element.NombreUsuario
-                        +"</td><td>"+element.LoginUsuario+"</td><td>"+element.PasswordUsuario+"</td> </tr>");
+                        $("#TableBody").append("<tr><td>"+element.NroMesa+"</td><td>"+element.CantPersonas
+                        +"</td><td>"+element.DescripcionMesa+"</td><td>"+element.NombreMozo+"</td> <td>"+element.NroPuntoVenta+
+                        "</td><td>"+element.TotalMesa+"</td> </tr>");
                     });                
                 },
             });
@@ -114,8 +139,59 @@
     });
 
     function PlaceAttribute(obj){
-        $("#OrderBy").html(obj.innerHTML);
-        $("#BtnEnviar").click();
+        $("#OrderBy").html(obj.innerText);
     }
+
+    function ResetInput(){
+        $("#DescFilter").val("");
+        myFunction();
+    }
+
+    function SearchByName(component){
+        $("#ToggleModal").click();
+        $("#TableBody").empty();
+        $("#MainContainer").css("pointer-events","none");
+        $("#MainContainer").css("opacity",0.3);
+        $.ajax({
+                type:"post",
+                url: "busquedaMozo.php", 
+                data:{NombreEmpleado:component.innerText},                
+                success: function(result){                    
+                    $("#MainContainer").css("pointer-events","auto");
+                    $("#MainContainer").css("opacity",1);
+                    $("#HideModal").click();
+                    var ObjRespuesta = JSON.parse(result);
+                    $("#CantRegistros").html(ObjRespuesta.length);
+                    ObjRespuesta.forEach(element => {
+                        $("#TableBody").append("<tr><td>"+element.NroMesa+"</td><td>"+element.CantPersonas
+                        +"</td><td>"+element.DescripcionMesa+"</td><td>"+element.NombreMozo+"</td> <td>"+element.NroPuntoVenta+
+                        "</td><td>"+element.TotalMesa+"</td> </tr>");
+                    });                
+                },
+            });
+    }
+
 </script>
+
+<script>
+        function myFunction() {
+          var input, filter, table, tr, td, i, txtValue;
+          input = document.getElementById("DescFilter");
+          filter = input.value.toUpperCase();
+          table = document.getElementById("myTable");
+          tr = table.getElementsByTagName("tr");
+          for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[2];
+            if (td) {
+              txtValue = td.innerText;
+              if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+              } else {
+                tr[i].style.display = "none";
+                
+              }
+            }
+          }
+        }
+        </script>
 </html>
