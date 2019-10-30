@@ -11,6 +11,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"/>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <style>
         body
         {
@@ -60,6 +61,33 @@
                     </div>
                 </nav>
 
+            <!-- Button trigger modal -->
+            <button type="button" hidden id="ShowDelete" data-toggle="modal" data-target="#modalDelete">
+                    delete
+                </button>
+                
+                <!-- Modal -->
+                <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-hidden="true" style="color: black;">
+                    <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Borrar mesa por numero</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="number" required class="form-control" id="selectMesa" placeholder="Numero de mesa">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="DeleteMesa()">Eliminar</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                
                 <!-- Button trigger modal -->
             <button id="ModalAdd" type="button" hidden class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">                    
                 </button>
@@ -75,28 +103,28 @@
                         </button>
                         </div>
                         <div class="modal-body">
-                            <form method="POST" action="AgregarMesa.php">
+                            <form >
                                 <div class="form-group">
                                         <label style="color:black">Cantidad de personas</label>
-                                        <input type="number" required class="form-control" name="CantPersonas" placeholder="Cantidad de personas">
+                                        <input type="number" required class="form-control" id="CantPersonas" placeholder="Cantidad de personas">
                                 </div>
                                 <div class="form-group">
                                         <label style="color:black">Descripcion de la mesa</label>
-                                        <input type="text" required class="form-control" name="DescripcionMesa" placeholder="Descripcion de la mesa">
+                                        <input type="text" required class="form-control" id="DescripcionMesa" placeholder="Descripcion de la mesa">
                                 </div>
                                 <div class="form-group">
                                         <label style="color:black">Nombre del mozo</label>
-                                        <select class="form-control" id="selectMozo" name="NombreMozo">
+                                        <select class="form-control" id="selectMozo" id="NombreMozo">
                                         </select>
                                 </div>
                                 <div class="form-group">
                                         <label style="color:black">Punto de venta</label>
-                                        <input type="number" required class="form-control" name="NroPuntoVenta" placeholder="Numero de punto de venta">
+                                        <input type="number" required class="form-control" id="NroPuntoVenta" placeholder="Numero de punto de venta">
                                 </div>
-                                <button type="submit" style="float: right;" class="btn btn-success">Agregar Mesa</button>
                             </form>
                         </div>
                         <div class="modal-footer">
+                            <button type="button" onclick="AddMesa()" class="btn btn-success">Agregar Mesa</button>
                             <button type="reset" class="btn btn-warning" data-dismiss="modal">Limpar formulario</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                         </div>
@@ -123,6 +151,7 @@
                       </div>
                 </div>
             <button id="BtnEnviar" class="col btn-dark">Hacer Consulta</button>     
+            <button id="BtnEnviarRapido" hidden class="col btn-dark">Hacer Consulta</button>     
         </div>
         
         <div>
@@ -162,8 +191,8 @@
     </div>
 </body>
 <script>
+     var NombresMozo;
     $(document).ready(function(){
-        var NombresMozo;
         $.ajax({
             type:"get",
             url: "Mozos.php", 
@@ -171,10 +200,17 @@
                 var ObjRespuesta = JSON.parse(result);
                 var Appendable = "";
                 var AppendableSelect = "";
-                NombreMozo = ObjRespuesta;
+                NombresMozo = ObjRespuesta;
+                var cont =0;
                 ObjRespuesta.forEach(element => {
                     Appendable+=("<a class='dropdown-item' href='#' onclick='SearchByName(this)'>"+element.NombreUsuario+"</a>");
-                    AppendableSelect+="<option>"+element.NombreUsuario+"</option>";
+                    if(cont ==1){
+                        AppendableSelect+="<option value="+cont+" selected>"+element.NombreUsuario+"</option>";    
+                    }
+                    else{
+                        AppendableSelect+="<option value="+cont+">"+element.NombreUsuario+"</option>";
+                    }
+                    cont++;
                 });                
                 $("#DropDownMenu").append(Appendable);
                 $("#selectMozo").append(AppendableSelect);
@@ -200,7 +236,26 @@
                     ObjRespuesta.forEach(element => {
                         $("#TableBody").append("<tr><td>"+element.NroMesa+"</td><td>"+element.CantPersonas
                         +"</td><td>"+element.DescripcionMesa+"</td><td>"+element.NombreMozo+"</td> <td>"+element.NroPuntoVenta+
-                        "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-trash'></i></td><td class='icon'><i class='fas fa-edit' ></i></td> </tr>");
+                        "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-edit' ></i></td> <td class='icon' onclick='ClickDelete()' ><i class='fas fa-trash'></i></td></tr>");
+                    });                
+                },
+            });
+        });         
+
+        $("#BtnEnviarRapido").click(function(){
+            $("#TableBody").empty();
+            var order=$("#OrderBy").html();
+            $.ajax({
+                type:"post",
+                url: "consultaRapida.php", 
+                data:{OrderBy:order},                
+                success: function(result){                    
+                    var ObjRespuesta = JSON.parse(result);
+                    $("#CantRegistros").html(ObjRespuesta.length);
+                    ObjRespuesta.forEach(element => {
+                        $("#TableBody").append("<tr><td>"+element.NroMesa+"</td><td>"+element.CantPersonas
+                        +"</td><td>"+element.DescripcionMesa+"</td><td>"+element.NombreMozo+"</td> <td>"+element.NroPuntoVenta+
+                        "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-edit' ></i></td> <td class='icon' onclick='ClickDelete()' ><i class='fas fa-trash'></i></td></tr>");
                     });                
                 },
             });
@@ -238,6 +293,79 @@
                     });                
                 },
             });
+    }
+
+    function AddMesa(){
+        var pos = $("#selectMozo").val();
+        $.ajax({
+                type:"post",
+                url: "AgregarMesa.php", 
+                data:{CantPersonas:$("#CantPersonas").val(),DescripcionMesa:$("#DescripcionMesa").val(),
+                NombreMozo:NombresMozo[pos].NombreUsuario,NroPuntoVenta:$("#NroPuntoVenta").val()},                
+                success: function(result){       
+                    if(result){
+                        swal({
+                            title: "Mesa agregada!",
+                            text: "Se Agrego la mesa exitosamente",
+                            icon: "success",
+                            button: "OK",
+                            });
+                    }else{
+                        swal({
+                            title: "Error!",
+                            text: "Ocurrio un error al agregar la mesa solicitada",
+                            icon: "error",
+                            button: "OK",
+                            });
+                    }
+                },
+            });
+            ShowAdd();
+            $("#BtnEnviarRapido").click();
+    }
+
+
+    function ClickDelete(){
+        $("#ShowDelete").click();
+    }
+
+    function DeleteMesa(){
+        var mesa = $("#selectMesa").val();
+        if(mesa ==0 || mesa==null || mesa == ""){
+            swal({
+                title: "Error!",
+                text: "Ocurrio un error al borrar la mesa solicitada, no se ingreso un numero valido.",
+                icon: "error",
+                button: "OK",
+            });
+            ClickDelete()
+            return;
+        }
+        
+        $.ajax({
+                type:"post",
+                url: "borrarMesa.php", 
+                data:{NroMesa:mesa},                
+                success: function(result){       
+                    if(result){
+                        swal({
+                            title: "Mesa eliminada!",
+                            text: "Se borro la mesa exitosamente",
+                            icon: "success",
+                            button: "OK",
+                            });
+                    }else{
+                        swal({
+                            title: "Error!",
+                            text: "Ocurrio un error al borrar la mesa solicitada",
+                            icon: "error",
+                            button: "OK",
+                            });
+                    }
+                },
+            });
+            ClickDelete();
+            $("#BtnEnviarRapido").click();
     }
 
     function ShowAdd(){

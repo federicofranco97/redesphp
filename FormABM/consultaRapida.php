@@ -3,7 +3,6 @@
     if($orden == ""){
         $orden="NroMesa";
     }
-    sleep(1);
     $mysqli = new mysqli("localhost","root","","ubd1");
     $query = "select * from mesa order by ".$orden;
     $resultado = $mysqli->query($query);
