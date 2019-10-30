@@ -38,10 +38,72 @@
         {
             cursor: pointer;
         }
+        .icon
+        {
+            text-align: center;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="bg-danger">
     <div id="MainContainer">
+            <nav class="navbar navbar-expand-lg navbar-light navbar-dark bg-dark">                                   
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                      <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                          <a class="nav-link" href="#" onclick="ShowAdd()">Agregar Mesa</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">Link</a>
+                        </li>                        
+                      </ul>                      
+                    </div>
+                </nav>
+
+                <!-- Button trigger modal -->
+            <button id="ModalAdd" type="button" hidden class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">                    
+                </button>
+                
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" style="color:black" id="exampleModalLongTitle">Formulario de alta</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" action="AgregarMesa.php">
+                                <div class="form-group">
+                                        <label style="color:black">Cantidad de personas</label>
+                                        <input type="number" required class="form-control" name="CantPersonas" placeholder="Cantidad de personas">
+                                </div>
+                                <div class="form-group">
+                                        <label style="color:black">Descripcion de la mesa</label>
+                                        <input type="text" required class="form-control" name="DescripcionMesa" placeholder="Descripcion de la mesa">
+                                </div>
+                                <div class="form-group">
+                                        <label style="color:black">Nombre del mozo</label>
+                                        <select class="form-control" id="selectMozo" name="NombreMozo">
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label style="color:black">Punto de venta</label>
+                                        <input type="number" required class="form-control" name="NroPuntoVenta" placeholder="Numero de punto de venta">
+                                </div>
+                                <button type="submit" style="float: right;" class="btn btn-success">Agregar Mesa</button>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="reset" class="btn btn-warning" data-dismiss="modal">Limpar formulario</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
         <div id="InputContainer" class="row">
             <div class="col">
                 <p id="OrderBy" type="text" disabled class="form-control">NroMesa</p>
@@ -53,18 +115,18 @@
             </div>
             <div class="col">
                     <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Filtrar por empleado
                         </button>
                         <div id="DropDownMenu" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         </div>
                       </div>
                 </div>
-            <button id="BtnEnviar" class="col">Hacer Consulta</button>     
+            <button id="BtnEnviar" class="col btn-dark">Hacer Consulta</button>     
         </div>
         
         <div>
-            <table id="myTable" class="table table-bordered table-dark table-fixed">
+            <table id="myTable" class="table table-bordered table-dark table-fixed" style="width: 90%;margin:auto">
                 <thead>
                     <th onclick="PlaceAttribute(this)">NroMesa</th>
                     <th onclick="PlaceAttribute(this)">CantPersonas</th>
@@ -74,6 +136,8 @@
                     <th onclick="PlaceAttribute(this)">NombreMozo</th>
                     <th onclick="PlaceAttribute(this)">NroPuntoVenta</th>
                     <th onclick="PlaceAttribute(this)">TotalMesa</th>
+                    <th class='icon'>Editar</th>
+                    <th class='icon'>Eliminar</th>
                 </thead>
                 <tbody id="TableBody">
                 </tbody>
@@ -99,19 +163,24 @@
 </body>
 <script>
     $(document).ready(function(){
+        var NombresMozo;
         $.ajax({
             type:"get",
             url: "Mozos.php", 
             success: function(result){                                
                 var ObjRespuesta = JSON.parse(result);
                 var Appendable = "";
+                var AppendableSelect = "";
+                NombreMozo = ObjRespuesta;
                 ObjRespuesta.forEach(element => {
                     Appendable+=("<a class='dropdown-item' href='#' onclick='SearchByName(this)'>"+element.NombreUsuario+"</a>");
+                    AppendableSelect+="<option>"+element.NombreUsuario+"</option>";
                 });                
                 $("#DropDownMenu").append(Appendable);
+                $("#selectMozo").append(AppendableSelect);
             },
         });
-
+        
         $("#BtnEnviar").click(function(){
             $("#ToggleModal").click();
             $("#TableBody").empty();
@@ -131,7 +200,7 @@
                     ObjRespuesta.forEach(element => {
                         $("#TableBody").append("<tr><td>"+element.NroMesa+"</td><td>"+element.CantPersonas
                         +"</td><td>"+element.DescripcionMesa+"</td><td>"+element.NombreMozo+"</td> <td>"+element.NroPuntoVenta+
-                        "</td><td>"+element.TotalMesa+"</td> </tr>");
+                        "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-trash'></i></td><td class='icon'><i class='fas fa-edit' ></i></td> </tr>");
                     });                
                 },
             });
@@ -169,6 +238,10 @@
                     });                
                 },
             });
+    }
+
+    function ShowAdd(){
+        $("#ModalAdd").click();
     }
 
 </script>
