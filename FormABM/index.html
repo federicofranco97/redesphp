@@ -53,10 +53,7 @@
                       <ul class="navbar-nav mr-auto">
                         <li class="nav-item active">
                           <a class="nav-link" href="#" onclick="ShowAdd()">Agregar Mesa</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="#">Link</a>
-                        </li>                        
+                        </li>                      
                       </ul>                      
                     </div>
                 </nav>
@@ -303,7 +300,7 @@
                 data:{CantPersonas:$("#CantPersonas").val(),DescripcionMesa:$("#DescripcionMesa").val(),
                 NombreMozo:NombresMozo[pos].NombreUsuario,NroPuntoVenta:$("#NroPuntoVenta").val()},                
                 success: function(result){       
-                    if(result){
+                    if(result === "true"){
                         swal({
                             title: "Mesa agregada!",
                             text: "Se Agrego la mesa exitosamente",
@@ -347,7 +344,7 @@
                 url: "borrarMesa.php", 
                 data:{NroMesa:mesa},                
                 success: function(result){       
-                    if(result){
+                    if(result === "true"){
                         swal({
                             title: "Mesa eliminada!",
                             text: "Se borro la mesa exitosamente",
@@ -365,7 +362,11 @@
                 },
             });
             ClickDelete();
-            $("#BtnEnviarRapido").click();
+            setTimeout(Buscar,1000);
+    }
+
+    function Buscar(){
+        $("#BtnEnviarRapido").click();
     }
 
     function ShowAdd(){
