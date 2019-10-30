@@ -2,17 +2,20 @@
     $orden = $_POST["OrderBy"];
     sleep(3);
     $mysqli = new mysqli("localhost","root","","ubd1");
-    $query = "select * from empleado order by ".$orden;
+    $query = "select * from mesa order by ".$orden;
     $resultado = $mysqli->query($query);
     $CantidadRegistros = $resultado->num_rows;  
     $almacenSql = [];
     while($fila = $resultado->fetch_assoc()){
         $objSql = new stdclass;   
-        $objSql-> IdUsuario = $fila["IdUsuario"];
-        $objSql-> NombreUsuario = $fila["NombreUsuario"];
-        $objSql-> LoginUsuario = $fila["LoginUsuario"];
-        $objSql-> PasswordUsuario = $fila["PasswordUsuario"];
-        array_push($almacenSql,$objSql);
+        $objSql-> NroMesa = $fila["NroMesa"];
+        $objSql-> CantPersonas = $fila["CantPersonas"];
+        $objSql-> DescripcionMesa = $fila["DescripcionMesa"];
+        $objSql-> TotalMesa = $fila["TotalMesa"];
+        $objSql-> NombreMozo = $fila["NombreMozo"];
+        $objSql-> NroPuntoVenta = $fila["NroPuntoVenta"];
+        $objSql-> FotoMEsa = $fila["TotalMesa"];
+        array_push($almacenSql,$objSql); 
     }
     $JsonObj = Json_encode($almacenSql);
     echo $JsonObj;
