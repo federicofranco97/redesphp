@@ -218,8 +218,9 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
+                            <button type="button" class="btn btn-primary">Guardar PDF</button>
+                            <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
+                        
                         </div>
                     </div>
                     </div>
@@ -260,12 +261,36 @@
                     <th onclick="PlaceAttribute(this)">TotalMesa</th>
                     <th class='icon'>Editar</th>
                     <th class='icon'>Eliminar</th>
+                    <th class='icon'>PDF</th>
                 </thead>
                 <tbody id="TableBody">
                 </tbody>
             </table>
         </div>
     </div>
+
+    <!-- Large modal -->
+    <button type="button" class="btn btn-primary"  hidden data-toggle="modal" id="PDFShow" data-target=".bd-example-modal-lg">Large modal</button>
+
+    <div class="modal fade bd-example-modal-lg" style="color: black;" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            
+            <div class="modal-content" style="height: 700px">
+                <div class="modal-header">        
+                    <h5 class="modal-title" id="exampleModalLongTitle">Documento PDF</h5>    
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="PdfBox">
+                    </div>
+                    <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Button trigger modal -->
     <button id="ToggleModal" hidden  type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
     </button>
@@ -330,7 +355,9 @@
                     ObjRespuesta.forEach(element => {
                         $("#TableBody").append("<tr><td>"+element.NroMesa+"</td><td>"+element.CantPersonas
                         +"</td><td>"+element.DescripcionMesa+"</td><td>"+element.NombreMozo+"</td> <td>"+element.NroPuntoVenta+
-                        "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-edit' onclick='ClickEdit(this)'></i></td> <td class='icon' onclick='ClickDelete()' ><i class='fas fa-trash'></i></td></tr>");
+                                "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-edit' onclick='ClickEdit(this)'></i></td>"+
+                                " <td class='icon' onclick='ClickDelete()' ><i class='fas fa-trash'></i></td>"+
+                                " <td class='icon'><i class='fas fa-file-pdf' onclick='ClickPDF(this)'></i></td></tr>");
                     });                
                 },
             });
@@ -349,7 +376,9 @@
                     ObjRespuesta.forEach(element => {
                         $("#TableBody").append("<tr><td>"+element.NroMesa+"</td><td>"+element.CantPersonas
                         +"</td><td>"+element.DescripcionMesa+"</td><td>"+element.NombreMozo+"</td> <td>"+element.NroPuntoVenta+
-                                "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-edit' onclick='ClickEdit(this)'></i></td> <td class='icon' onclick='ClickDelete()' ><i class='fas fa-trash'></i></td></tr>");
+                                "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-edit' onclick='ClickEdit(this)'></i></td>"+
+                                " <td class='icon' onclick='ClickDelete()' ><i class='fas fa-trash'></i></td>"+
+                                " <td class='icon'><i class='fas fa-file-pdf' onclick='ClickPDF(this)'></i></td></tr>");
                     });                
                 },
             });
@@ -371,6 +400,23 @@
         $("#NroPuntoVentaM").val(puntoVenta);
         $("#TotalMesaM").val(totalMesa);
         $("#ToggleModify").click();
+    }
+
+    function ClickPDF(component){
+
+        var tableRow = component.parentNode.parentNode;
+        var nroMesa = tableRow.cells[0].innerText;
+        $.ajax({
+                type:"post",
+                url: "busquedaPDF.php", 
+                data:{NroMesa:nroMesa},                
+                success: function(result){                    
+                    var ObjRespuesta = JSON.parse(result);
+                    $("#PdfBox").html("<iframe style='width:100%;height:100%;'  "+
+                    " src='data:application/pdf;base64,"+ObjRespuesta.PDF+"'></iframe>");
+                },
+            });
+       $("#PDFShow").click();       
     }
 
     function PlaceAttribute(obj){
