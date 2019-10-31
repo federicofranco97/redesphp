@@ -49,15 +49,78 @@
 <body class="bg-danger">
     <div id="MainContainer">
             <nav class="navbar navbar-expand-lg navbar-light navbar-dark bg-dark">                                   
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent" style="font-weight: bold;">
                       <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                          <a class="nav-link" href="#" onclick="ShowAdd()">Agregar Mesa</a>
-                        </li>                      
+                        <li class="nav-item active" >
+                          <a class="nav-link" href="#" onclick="ShowAdd()">
+                             Agregar Mesa 
+                          </a>
+                        </li>     
+                        <li class="nav-item active" >
+                                <a class="nav-link" href="#" onclick="ShowPDF()">
+                                   Agregar PDF 
+                                </a>
+                              </li>                      
                       </ul>                      
                     </div>
                 </nav>
 
+            <!-- Button trigger modal -->
+            <button type="button" id="ToggleModify" hidden data-toggle="modal" data-target="#modalModif">
+                l
+            </button>
+            
+            <!-- Modal -->
+            <div class="modal fade" id="modalModif" style="color:black" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modificar mesa</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                            <div class="modal-body">
+                                    <form >
+                                    <div class="row">
+                                        <div class="form-group col">
+                                                <label style="color:black">Numero de mesa</label>
+                                                <input type="number" required class="form-control" id="NroMesaM" disabled>
+                                        </div>
+                                        <div class="form-group col">
+                                                <label style="color:black">Cantidad de personas</label>
+                                                <input type="number" required class="form-control" id="CantPersonasM" placeholder="Cantidad de personas">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col">
+                                                <label style="color:black">Punto de venta</label>
+                                                <input type="number" required class="form-control" id="NroPuntoVentaM" placeholder="Numero de punto de venta">
+                                        </div>
+                                        <div class="form-group col">
+                                                <label style="color:black">Nombre del mozo</label>
+                                                <select class="form-control" id="selectMozoM">
+                                                </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col">
+                                                <label style="color:black">Descripcion de la mesa</label>
+                                                <input type="text" required class="form-control" id="DescripcionMesaM" placeholder="Descripcion de la mesa">
+                                        </div>
+                                    </div>
+                                    </form>
+                                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="UpdateMesa()">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+                
             <!-- Button trigger modal -->
             <button type="button" hidden id="ShowDelete" data-toggle="modal" data-target="#modalDelete">
                     delete
@@ -129,6 +192,39 @@
                     </div>
                 </div>
 
+                <!-- Button trigger modal -->
+                <button type="button" id="BtnPDF" hidden data-toggle="modal" data-target="#modalPDF">
+                    s
+                </button>
+                
+                <!-- Modal -->
+                <div class="modal fade" style="color:black" id="modalPDF" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                    <label style="color:black">Numero de mesa</label>
+                                    <input type="number" required min="1" class="form-control" id="NroMesaPDF" >
+                            </div>
+                            <div class="form-group">
+                                    <label>Seleccione el archivo</label>
+                                    <input type="file" class="form-control-file" id="filePicker">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
         <div id="InputContainer" class="row">
             <div class="col">
                 <p id="OrderBy" type="text" disabled class="form-control">NroMesa</p>
@@ -157,7 +253,7 @@
                     <th onclick="PlaceAttribute(this)">NroMesa</th>
                     <th onclick="PlaceAttribute(this)">CantPersonas</th>
                     <th ><label id="DescLabel" onclick="PlaceAttribute(this)">DescripcionMesa</label><input id="DescFilter" onkeyup="myFunction()"
-                         style="margin-left: 25px;width: 60%;" type="text" placeholder="Filtro">
+                         style="margin-left: 25px;width: 50%;" type="text" placeholder="Filtro">
                         <i class="fas fa-recycle" onclick="ResetInput()" title="Click aqui para limpiar el filtro"></i> </th>
                     <th onclick="PlaceAttribute(this)">NombreMozo</th>
                     <th onclick="PlaceAttribute(this)">NroPuntoVenta</th>
@@ -211,6 +307,7 @@
                 });                
                 $("#DropDownMenu").append(Appendable);
                 $("#selectMozo").append(AppendableSelect);
+                $("#selectMozoM").append(AppendableSelect);
             },
         });
         
@@ -233,7 +330,7 @@
                     ObjRespuesta.forEach(element => {
                         $("#TableBody").append("<tr><td>"+element.NroMesa+"</td><td>"+element.CantPersonas
                         +"</td><td>"+element.DescripcionMesa+"</td><td>"+element.NombreMozo+"</td> <td>"+element.NroPuntoVenta+
-                        "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-edit' ></i></td> <td class='icon' onclick='ClickDelete()' ><i class='fas fa-trash'></i></td></tr>");
+                        "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-edit' onclick='ClickEdit(this)'></i></td> <td class='icon' onclick='ClickDelete()' ><i class='fas fa-trash'></i></td></tr>");
                     });                
                 },
             });
@@ -252,15 +349,33 @@
                     ObjRespuesta.forEach(element => {
                         $("#TableBody").append("<tr><td>"+element.NroMesa+"</td><td>"+element.CantPersonas
                         +"</td><td>"+element.DescripcionMesa+"</td><td>"+element.NombreMozo+"</td> <td>"+element.NroPuntoVenta+
-                        "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-edit' ></i></td> <td class='icon' onclick='ClickDelete()' ><i class='fas fa-trash'></i></td></tr>");
+                                "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-edit' onclick='ClickEdit(this)'></i></td> <td class='icon' onclick='ClickDelete()' ><i class='fas fa-trash'></i></td></tr>");
                     });                
                 },
             });
         });         
     });
 
+    function ClickEdit(component){
+        var tableRow = component.parentNode.parentNode;
+        var nroMesa = tableRow.cells[0].innerText;
+        var cantPersonas = tableRow.cells[1].innerText;
+        var descMesa = tableRow.cells[2].innerText;
+        var nombreMozo = tableRow.cells[3].innerText;
+        var puntoVenta = tableRow.cells[4].innerText;
+        var totalMesa = tableRow.cells[5].innerText;
+        $("#NroMesaM").val(parseInt(nroMesa));
+        $("#CantPersonasM").val(parseInt(cantPersonas));
+        $("#DescripcionMesaM").val(descMesa);
+        $("#NombreMozoM").val(nombreMozo);
+        $("#NroPuntoVentaM").val(puntoVenta);
+        $("#TotalMesaM").val(totalMesa);
+        $("#ToggleModify").click();
+    }
+
     function PlaceAttribute(obj){
         $("#OrderBy").html(obj.innerText);
+        $("#BtnEnviar").click();
     }
 
     function ResetInput(){
@@ -318,12 +433,72 @@
                 },
             });
             ShowAdd();
-            $("#BtnEnviarRapido").click();
+            setTimeout(Buscar,1000);
+    }
+
+    function AddPDF(){
+        var mesa = $("#NroMesaPDF").val();
+        var pdf = $("#filePicker").val();
+        $.ajax({
+                type:"post",
+                url: "AgregarMesa.php", 
+                data:{CantPersonas:$("#CantPersonas").val(),DescripcionMesa:$("#DescripcionMesa").val(),
+                NombreMozo:NombresMozo[pos].NombreUsuario,NroPuntoVenta:$("#NroPuntoVenta").val()},                
+                success: function(result){       
+                    if(result === "true"){
+                        swal({
+                            title: "Mesa agregada!",
+                            text: "Se Agrego la mesa exitosamente",
+                            icon: "success",
+                            button: "OK",
+                            });
+                    }else{
+                        swal({
+                            title: "Error!",
+                            text: "Ocurrio un error al agregar la mesa solicitada",
+                            icon: "error",
+                            button: "OK",
+                            });
+                    }
+                },
+            });
+            ShowAdd();
+            setTimeout(Buscar,1000);
     }
 
 
     function ClickDelete(){
         $("#ShowDelete").click();
+    }
+
+    function UpdateMesa(){
+        var pos = $("#selectMozoM").val();
+        $.ajax({
+                type:"post",
+                url: "modificarMesa.php", 
+                data:{CantPersonas:$("#CantPersonasM").val(),DescripcionMesa:$("#DescripcionMesaM").val(),
+                NombreMozo:NombresMozo[pos].NombreUsuario,NroPuntoVenta:$("#NroPuntoVentaM").val(),
+                NroMesa:$("#NroMesaM").val()},                
+                success: function(result){       
+                    if(result === "true"){
+                        swal({
+                            title: "Mesa modificada!",
+                            text: "Se Agrego la mesa exitosamente",
+                            icon: "success",
+                            button: "OK",
+                            });
+                    }else{
+                        swal({
+                            title: "Error!",
+                            text: "Ocurrio un error al modificar la mesa solicitada",
+                            icon: "error",
+                            button: "OK",
+                            });
+                    }
+                },
+            });
+            $("#ToggleModify").click();
+            setTimeout(Buscar,1000);
     }
 
     function DeleteMesa(){
@@ -371,6 +546,10 @@
 
     function ShowAdd(){
         $("#ModalAdd").click();
+    }
+
+    function ShowPDF(){
+        $("#BtnPDF").click();
     }
 
 </script>
