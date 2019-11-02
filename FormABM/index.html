@@ -218,7 +218,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary">Guardar PDF</button>
+                            <button type="button" onclick="AddPDF()" class="btn btn-primary">Guardar PDF</button>
                             <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
                         
                         </div>
@@ -485,30 +485,20 @@
     function AddPDF(){
         var mesa = $("#NroMesaPDF").val();
         var pdf = $("#filePicker").val();
+        console.log(mesa);
+        console.log(pdf);
         $.ajax({
                 type:"post",
-                url: "AgregarMesa.php", 
-                data:{CantPersonas:$("#CantPersonas").val(),DescripcionMesa:$("#DescripcionMesa").val(),
-                NombreMozo:NombresMozo[pos].NombreUsuario,NroPuntoVenta:$("#NroPuntoVenta").val()},                
+                url: "AgregarPDF.php", 
+                processData:false,
+                contentType:false,
+                cache:false,
+                data:{NroMesa:mesa,archivoPDF:pdf},                
                 success: function(result){       
-                    if(result === "true"){
-                        swal({
-                            title: "Mesa agregada!",
-                            text: "Se Agrego la mesa exitosamente",
-                            icon: "success",
-                            button: "OK",
-                            });
-                    }else{
-                        swal({
-                            title: "Error!",
-                            text: "Ocurrio un error al agregar la mesa solicitada",
-                            icon: "error",
-                            button: "OK",
-                            });
-                    }
+                    
+                    console.log(result);
                 },
             });
-            ShowAdd();
             setTimeout(Buscar,1000);
     }
 
