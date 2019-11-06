@@ -56,7 +56,11 @@
                 data:{User:User,Password:Password},                
                 success: function(result){       
                     if(true){
-						window.open("prog.html","_self");
+						<?php 
+						session_start();
+    					$_SESSION['session'] = session_id();
+						?>
+						window.open("prog.php","_self");
 					}
                 },
             });

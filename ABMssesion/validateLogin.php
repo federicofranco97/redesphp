@@ -1,5 +1,4 @@
 <?php
-    sleep(1);
     $User = $_POST["User"];
     $Password = $_POST["Password"];
     $EncPassword = sha1($Password);
