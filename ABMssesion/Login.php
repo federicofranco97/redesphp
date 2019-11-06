@@ -54,13 +54,17 @@
                 type:"post",
                 url: "validateLogin.php", 
                 data:{User:User,Password:Password},                
-                success: function(result){       
-                    if(true){
+                success: function(result){
+					var bol = JSON.parse(result);
+                    if(bol === true){
 						<?php 
 						session_start();
     					$_SESSION['session'] = session_id();
 						?>
-						window.open("prog.php","_self");
+						window.open("./index.php","_self");
+					}
+					else{
+						window.open("./login.php","_self");
 					}
                 },
             });

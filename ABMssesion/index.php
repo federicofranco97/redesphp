@@ -70,6 +70,11 @@ if(!isset($_SESSION['session'])){
                                    Agregar PDF 
                                 </a>
                               </li>                      
+                              <li class="nav-item active" >
+                                <a class="nav-link" href="./TerminarSesion.php" >
+                                   Cerrar Sesion
+                                </a>
+                              </li>    
                       </ul>                      
                     </div>
                 </nav>
