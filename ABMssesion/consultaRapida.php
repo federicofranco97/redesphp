@@ -1,4 +1,9 @@
 <?php
+    session_start();
+    if(!isset($_SESSION['session'])){
+        header('Location:../ABMssesion/login.php');
+        exit;
+    }
     $orden = $_POST["OrderBy"];
     if($orden == ""){
         $orden="NroMesa";

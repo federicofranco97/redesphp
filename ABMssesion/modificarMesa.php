@@ -1,4 +1,9 @@
 <?php
+    session_start();
+    if(!isset($_SESSION['session'])){
+        header('Location:../ABMssesion/login.php');
+        exit;
+    }
     $NroMesa = $_POST["NroMesa"];
     $CantPersonas = $_POST["CantPersonas"];
     $DescripcionMesa = $_POST["DescripcionMesa"];
