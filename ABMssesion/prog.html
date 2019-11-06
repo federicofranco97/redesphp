@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+    
+<head>
+    <title>Consulta MySQL</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous"/>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <style>
+        body
+        {
+            height: 100%;
+            width: 100%;
+            color:white;
+        }
+        #InputContainer
+        {
+            width: 70vw;
+            margin:auto;
+            margin-top:2%;
+            margin-bottom:2%;
+        }
+        tbody
+        {
+            height: 25vh;
+            overflow-y: auto;
+        }
+        #BtnEnviar
+        {
+            height: 40px;
+        }
+        th,#DescLabel
+        {
+            cursor: pointer;
+        }
+        .icon
+        {
+            text-align: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-danger">
+    <div id="MainContainer">
+            <nav class="navbar navbar-expand-lg navbar-light navbar-dark bg-dark">                                   
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent" style="font-weight: bold;">
+                      <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active" >
+                          <a class="nav-link" href="#" onclick="ShowAdd()">
+                             Agregar Mesa 
+                          </a>
+                        </li>     
+                        <li class="nav-item active" >
+                                <a class="nav-link" href="#" onclick="ShowPDF()">
+                                   Agregar PDF 
+                                </a>
+                              </li>                      
+                      </ul>                      
+                    </div>
+                </nav>
+
+            <!-- Button trigger modal -->
+            <button type="button" id="ToggleModify" hidden data-toggle="modal" data-target="#modalModif">
+                l
+            </button>
+            
+            <!-- Modal -->
+            <div class="modal fade" id="modalModif" style="color:black" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modificar mesa</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                            <div class="modal-body">
+                                    <form >
+                                    <div class="row">
+                                        <div class="form-group col">
+                                                <label style="color:black">Numero de mesa</label>
+                                                <input type="number" required class="form-control" id="NroMesaM" disabled>
+                                        </div>
+                                        <div class="form-group col">
+                                                <label style="color:black">Cantidad de personas</label>
+                                                <input type="number" required class="form-control" id="CantPersonasM" placeholder="Cantidad de personas">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col">
+                                                <label style="color:black">Punto de venta</label>
+                                                <input type="number" required class="form-control" id="NroPuntoVentaM" placeholder="Numero de punto de venta">
+                                        </div>
+                                        <div class="form-group col">
+                                                <label style="color:black">Nombre del mozo</label>
+                                                <select class="form-control" id="selectMozoM">
+                                                </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col">
+                                                <label style="color:black">Descripcion de la mesa</label>
+                                                <input type="text" required class="form-control" id="DescripcionMesaM" placeholder="Descripcion de la mesa">
+                                        </div>
+                                    </div>
+                                    </form>
+                                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="UpdateMesa()">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+                
+            <!-- Button trigger modal -->
+            <button type="button" hidden id="ShowDelete" data-toggle="modal" data-target="#modalDelete">
+                    delete
+                </button>
+                
+                <!-- Modal -->
+                <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-hidden="true" style="color: black;">
+                    <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Borrar mesa por numero</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="number" required class="form-control" id="selectMesa" placeholder="Numero de mesa">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="DeleteMesa()">Eliminar</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                
+                <!-- Button trigger modal -->
+            <button id="ModalAdd" type="button" hidden class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">                    
+                </button>
+                
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" style="color:black" id="exampleModalLongTitle">Formulario de alta</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+                            <form >
+                                <div class="form-group">
+                                        <label style="color:black">Cantidad de personas</label>
+                                        <input type="number" required class="form-control" id="CantPersonas" placeholder="Cantidad de personas">
+                                </div>
+                                <div class="form-group">
+                                        <label style="color:black">Descripcion de la mesa</label>
+                                        <input type="text" required class="form-control" id="DescripcionMesa" placeholder="Descripcion de la mesa">
+                                </div>
+                                <div class="form-group">
+                                        <label style="color:black">Nombre del mozo</label>
+                                        <select class="form-control" id="selectMozo" id="NombreMozo">
+                                        </select>
+                                </div>
+                                <div class="form-group">
+                                        <label style="color:black">Punto de venta</label>
+                                        <input type="number" required class="form-control" id="NroPuntoVenta" placeholder="Numero de punto de venta">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" onclick="AddMesa()" class="btn btn-success">Agregar Mesa</button>
+                            <button type="reset" class="btn btn-warning" data-dismiss="modal">Limpar formulario</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Button trigger modal -->
+                <button type="button" id="BtnPDF" hidden data-toggle="modal" data-target="#modalPDF">
+                    s
+                </button>
+                
+                <!-- Modal -->
+                <div class="modal fade" style="color:black" id="modalPDF" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                    <label style="color:black">Numero de mesa</label>
+                                    <input type="number" required min="1" class="form-control" id="NroMesaPDF" >
+                            </div>
+                            <div class="form-group">
+                                    <label>Seleccione el archivo</label>
+                                    <input type="file" class="form-control-file" id="filePicker">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" onclick="AddPDF()" class="btn btn-primary">Guardar PDF</button>
+                            <button type="button" class="btn btn-warning" data-dismiss="modal">Cancelar</button>
+                        
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+        <div id="InputContainer" class="row">
+            <div class="col">
+                <p id="OrderBy" type="text" disabled class="form-control">NroMesa</p>
+                <small>Ordenado por</small>
+            </div>
+            <div class="col">
+                <p id="CantRegistros" type="text" disabled class="form-control"></p>
+                <small>Cantidad de registros</small>
+            </div>
+            <div class="col">
+                    <div class="dropdown">
+                        <button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Filtrar por empleado
+                        </button>
+                        <div id="DropDownMenu" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        </div>
+                      </div>
+                </div>
+            <button id="BtnEnviar" class="col btn-dark">Hacer Consulta</button>     
+            <button id="BtnEnviarRapido" hidden class="col btn-dark">Hacer Consulta</button>     
+        </div>
+        
+        <div>
+            <table id="myTable" class="table table-bordered table-dark table-fixed" style="width: 90%;margin:auto">
+                <thead>
+                    <th onclick="PlaceAttribute(this)">NroMesa</th>
+                    <th onclick="PlaceAttribute(this)">CantPersonas</th>
+                    <th ><label id="DescLabel" onclick="PlaceAttribute(this)">DescripcionMesa</label><input id="DescFilter" onkeyup="myFunction()"
+                         style="margin-left: 25px;width: 50%;" type="text" placeholder="Filtro">
+                        <i class="fas fa-recycle" onclick="ResetInput()" title="Click aqui para limpiar el filtro"></i> </th>
+                    <th onclick="PlaceAttribute(this)">NombreMozo</th>
+                    <th onclick="PlaceAttribute(this)">NroPuntoVenta</th>
+                    <th onclick="PlaceAttribute(this)">TotalMesa</th>
+                    <th class='icon'>Editar</th>
+                    <th class='icon'>Eliminar</th>
+                    <th class='icon'>PDF</th>
+                </thead>
+                <tbody id="TableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Large modal -->
+    <button type="button" class="btn btn-primary"  hidden data-toggle="modal" id="PDFShow" data-target=".bd-example-modal-lg">Large modal</button>
+
+    <div class="modal fade bd-example-modal-lg" style="color: black;" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            
+            <div class="modal-content" style="height: 700px">
+                <div class="modal-header">        
+                    <h5 class="modal-title" id="exampleModalLongTitle">Documento PDF</h5>    
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="PdfBox">
+                    </div>
+                    <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Button trigger modal -->
+    <button id="ToggleModal" hidden  type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    </button>
+      
+      <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
+    data-backdrop="false">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">            
+            <div class="modal-body">
+                <img src="cargando.gif" style="height:100%;width:100%;margin:auto;">
+                <button type="button" id="HideModal" class="btn btn-secondary" data-dismiss="modal" hidden>Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
+</body>
+<script>
+     var NombresMozo;
+    $(document).ready(function(){
+        $.ajax({
+            type:"get",
+            url: "Mozos.php", 
+            success: function(result){                                
+                var ObjRespuesta = JSON.parse(result);
+                var Appendable = "";
+                var AppendableSelect = "";
+                NombresMozo = ObjRespuesta;
+                var cont =0;
+                ObjRespuesta.forEach(element => {
+                    Appendable+=("<a class='dropdown-item' href='#' onclick='SearchByName(this)'>"+element.NombreUsuario+"</a>");
+                    if(cont ==1){
+                        AppendableSelect+="<option value="+cont+" selected>"+element.NombreUsuario+"</option>";    
+                    }
+                    else{
+                        AppendableSelect+="<option value="+cont+">"+element.NombreUsuario+"</option>";
+                    }
+                    cont++;
+                });                
+                $("#DropDownMenu").append(Appendable);
+                $("#selectMozo").append(AppendableSelect);
+                $("#selectMozoM").append(AppendableSelect);
+            },
+        });
+        
+        $("#BtnEnviar").click(function(){
+            $("#ToggleModal").click();
+            $("#TableBody").empty();
+            $("#MainContainer").css("pointer-events","none");
+            $("#MainContainer").css("opacity",0.3);
+            var order=$("#OrderBy").html();
+            $.ajax({
+                type:"post",
+                url: "consulta.php", 
+                data:{OrderBy:order},                
+                success: function(result){                    
+                    $("#MainContainer").css("pointer-events","auto");
+                    $("#MainContainer").css("opacity",1);
+                    $("#HideModal").click();
+                    var ObjRespuesta = JSON.parse(result);
+                    $("#CantRegistros").html(ObjRespuesta.length);
+                    ObjRespuesta.forEach(element => {
+                        $("#TableBody").append("<tr><td>"+element.NroMesa+"</td><td>"+element.CantPersonas
+                        +"</td><td>"+element.DescripcionMesa+"</td><td>"+element.NombreMozo+"</td> <td>"+element.NroPuntoVenta+
+                                "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-edit' onclick='ClickEdit(this)'></i></td>"+
+                                " <td class='icon' onclick='ClickDelete()' ><i class='fas fa-trash'></i></td>"+
+                                " <td class='icon'><i class='fas fa-file-pdf' onclick='ClickPDF(this)'></i></td></tr>");
+                    });                
+                },
+            });
+        });         
+
+        $("#BtnEnviarRapido").click(function(){
+            $("#TableBody").empty();
+            var order=$("#OrderBy").html();
+            $.ajax({
+                type:"post",
+                url: "consultaRapida.php", 
+                data:{OrderBy:order},                
+                success: function(result){                    
+                    var ObjRespuesta = JSON.parse(result);
+                    $("#CantRegistros").html(ObjRespuesta.length);
+                    ObjRespuesta.forEach(element => {
+                        $("#TableBody").append("<tr><td>"+element.NroMesa+"</td><td>"+element.CantPersonas
+                        +"</td><td>"+element.DescripcionMesa+"</td><td>"+element.NombreMozo+"</td> <td>"+element.NroPuntoVenta+
+                                "</td><td>"+element.TotalMesa+"</td> <td class='icon'><i class='fas fa-edit' onclick='ClickEdit(this)'></i></td>"+
+                                " <td class='icon' onclick='ClickDelete()' ><i class='fas fa-trash'></i></td>"+
+                                " <td class='icon'><i class='fas fa-file-pdf' onclick='ClickPDF(this)'></i></td></tr>");
+                    });                
+                },
+            });
+        });         
+    });
+
+    function ClickEdit(component){
+        var tableRow = component.parentNode.parentNode;
+        var nroMesa = tableRow.cells[0].innerText;
+        var cantPersonas = tableRow.cells[1].innerText;
+        var descMesa = tableRow.cells[2].innerText;
+        var nombreMozo = tableRow.cells[3].innerText;
+        var puntoVenta = tableRow.cells[4].innerText;
+        var totalMesa = tableRow.cells[5].innerText;
+        $("#NroMesaM").val(parseInt(nroMesa));
+        $("#CantPersonasM").val(parseInt(cantPersonas));
+        $("#DescripcionMesaM").val(descMesa);
+        $("#NombreMozoM").val(nombreMozo);
+        $("#NroPuntoVentaM").val(puntoVenta);
+        $("#TotalMesaM").val(totalMesa);
+        $("#ToggleModify").click();
+    }
+
+    function ClickPDF(component){
+
+        var tableRow = component.parentNode.parentNode;
+        var nroMesa = tableRow.cells[0].innerText;
+        $.ajax({
+                type:"post",
+                url: "busquedaPDF.php", 
+                data:{NroMesa:nroMesa},                
+                success: function(result){                    
+                    var ObjRespuesta = JSON.parse(result);
+                    $("#PdfBox").html("<iframe style='width:100%;height:100%;'  "+
+                    " src='data:application/pdf;base64,"+ObjRespuesta.PDF+"'></iframe>");
+                },
+            });
+       $("#PDFShow").click();       
+    }
+
+    function PlaceAttribute(obj){
+        $("#OrderBy").html(obj.innerText);
+        $("#BtnEnviar").click();
+    }
+
+    function ResetInput(){
+        $("#DescFilter").val("");
+        myFunction();
+    }
+
+    function SearchByName(component){
+        $("#ToggleModal").click();
+        $("#TableBody").empty();
+        $("#MainContainer").css("pointer-events","none");
+        $("#MainContainer").css("opacity",0.3);
+        $.ajax({
+                type:"post",
+                url: "busquedaMozo.php", 
+                data:{NombreEmpleado:component.innerText},                
+                success: function(result){                    
+                    $("#MainContainer").css("pointer-events","auto");
+                    $("#MainContainer").css("opacity",1);
+                    $("#HideModal").click();
+                    var ObjRespuesta = JSON.parse(result);
+                    $("#CantRegistros").html(ObjRespuesta.length);
+                    ObjRespuesta.forEach(element => {
+                        $("#TableBody").append("<tr><td>"+element.NroMesa+"</td><td>"+element.CantPersonas
+                        +"</td><td>"+element.DescripcionMesa+"</td><td>"+element.NombreMozo+"</td> <td>"+element.NroPuntoVenta+
+                        "</td><td>"+element.TotalMesa+"</td> </tr>");
+                    });                
+                },
+            });
+    }
+
+    function AddMesa(){
+        var pos = $("#selectMozo").val();
+        $.ajax({
+                type:"post",
+                url: "AgregarMesa.php", 
+                data:{CantPersonas:$("#CantPersonas").val(),DescripcionMesa:$("#DescripcionMesa").val(),
+                NombreMozo:NombresMozo[pos].NombreUsuario,NroPuntoVenta:$("#NroPuntoVenta").val()},                
+                success: function(result){       
+                    if(result === "true"){
+                        swal({
+                            title: "Mesa agregada!",
+                            text: "Se Agrego la mesa exitosamente",
+                            icon: "success",
+                            button: "OK",
+                            });
+                    }else{
+                        swal({
+                            title: "Error!",
+                            text: "Ocurrio un error al agregar la mesa solicitada",
+                            icon: "error",
+                            button: "OK",
+                            });
+                    }
+                },
+            });
+            ShowAdd();
+            setTimeout(Buscar,1000);
+    }
+
+    function AddPDF(){
+        var mesa = $("#NroMesaPDF").val();
+        var pdf = $("#filePicker").val();
+        console.log(mesa);
+        console.log(pdf);
+        $.ajax({
+                type:"post",
+                url: "AgregarPDF.php", 
+                processData:false,
+                contentType:false,
+                cache:false,
+                data:{NroMesa:mesa,archivoPDF:pdf},                
+                success: function(result){       
+                    
+                    console.log(result);
+                },
+            });
+            setTimeout(Buscar,1000);
+    }
+
+
+    function ClickDelete(){
+        $("#ShowDelete").click();
+    }
+
+    function UpdateMesa(){
+        var pos = $("#selectMozoM").val();
+        $.ajax({
+                type:"post",
+                url: "modificarMesa.php", 
+                data:{CantPersonas:$("#CantPersonasM").val(),DescripcionMesa:$("#DescripcionMesaM").val(),
+                NombreMozo:NombresMozo[pos].NombreUsuario,NroPuntoVenta:$("#NroPuntoVentaM").val(),
+                NroMesa:$("#NroMesaM").val()},                
+                success: function(result){       
+                    if(result === "true"){
+                        swal({
+                            title: "Mesa modificada!",
+                            text: "Se Agrego la mesa exitosamente",
+                            icon: "success",
+                            button: "OK",
+                            });
+                    }else{
+                        swal({
+                            title: "Error!",
+                            text: "Ocurrio un error al modificar la mesa solicitada",
+                            icon: "error",
+                            button: "OK",
+                            });
+                    }
+                },
+            });
+            $("#ToggleModify").click();
+            setTimeout(Buscar,1000);
+    }
+
+    function DeleteMesa(){
+        var mesa = $("#selectMesa").val();
+        if(mesa ==0 || mesa==null || mesa == ""){
+            swal({
+                title: "Error!",
+                text: "Ocurrio un error al borrar la mesa solicitada, no se ingreso un numero valido.",
+                icon: "error",
+                button: "OK",
+            });
+            ClickDelete()
+            return;
+        }
+        
+        $.ajax({
+                type:"post",
+                url: "borrarMesa.php", 
+                data:{NroMesa:mesa},                
+                success: function(result){       
+                    if(result === "true"){
+                        swal({
+                            title: "Mesa eliminada!",
+                            text: "Se borro la mesa exitosamente",
+                            icon: "success",
+                            button: "OK",
+                            });
+                    }else{
+                        swal({
+                            title: "Error!",
+                            text: "Ocurrio un error al borrar la mesa solicitada",
+                            icon: "error",
+                            button: "OK",
+                            });
+                    }
+                },
+            });
+            ClickDelete();
+            setTimeout(Buscar,1000);
+    }
+
+    function Buscar(){
+        $("#BtnEnviarRapido").click();
+    }
+
+    function ShowAdd(){
+        $("#ModalAdd").click();
+    }
+
+    function ShowPDF(){
+        $("#BtnPDF").click();
+    }
+
+</script>
+
+<script>
+        function myFunction() {
+          var input, filter, table, tr, td, i, txtValue;
+          input = document.getElementById("DescFilter");
+          filter = input.value.toUpperCase();
+          table = document.getElementById("myTable");
+          tr = table.getElementsByTagName("tr");
+          for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[2];
+            if (td) {
+              txtValue = td.innerText;
+              if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+              } else {
+                tr[i].style.display = "none";
+                
+              }
+            }
+          }
+        }
+        </script>
+</html>
