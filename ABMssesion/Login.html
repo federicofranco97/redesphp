@@ -15,12 +15,12 @@
 	<!--Custom styles-->
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
-<body>
+<body class="bg-danger">
 <div class="container">
 	<div class="d-flex justify-content-center h-100">
 		<div class="card">
 			<div class="card-header">
-				<h3>Sign In</h3>
+				<h3>Ingreso al sistema</h3>
 			</div>
 			<div class="card-body">
 				<form>
@@ -28,14 +28,14 @@
 						<div class="input-group-prepend">
 							<span class="input-group-text"><i class="fas fa-user"></i></span>
 						</div>
-						<input type="text" class="form-control" id="User" placeholder="username">
+						<input type="text" class="form-control" id="User" placeholder="Usuario">
 						
 					</div>
 					<div class="input-group form-group">
 						<div class="input-group-prepend">
 							<span class="input-group-text"><i class="fas fa-key"></i></span>
 						</div>
-						<input type="password" id="Pass" class="form-control" placeholder="password">
+						<input type="password" id="Pass" class="form-control" placeholder="Contraseña">
 					</div>
 					<div class="form-group">
 						<input type="button" onclick="ValidateLogin()" value="Login" class="btn float-right login_btn">
@@ -54,19 +54,6 @@
                 type:"post",
                 url: "validateLogin.php", 
                 data:{User:User,Password:Password},                
-                success: function(result){
-					var bol = JSON.parse(result);
-                    if(bol === true){
-						<?php 
-						session_start();
-    					$_SESSION['session'] = session_id();
-						?>
-						window.open("./index.php","_self");
-					}
-					else{
-						window.open("./login.php","_self");
-					}
-                },
             });
     }
 

@@ -11,10 +11,14 @@
         $claveResultado = $fila["passwordusuario"];
     } 
     if($claveResultado == $EncPassword){
-        $JsonObj = Json_encode(true);    
+        $JsonObj = Json_encode(true);   
+        session_start();
+        $_SESSION['Tsession'] = session_id(); 
+        header('Location:../ABMssesion/index.php');
     }   
     else{
-        $JsonObj = Json_encode(false);       
+        $JsonObj = Json_encode(false);      
+        header('Location:../ABMssesion/login.html'); 
     }
    
     echo $JsonObj;

@@ -1,7 +1,7 @@
 <?php 
 session_start();
-if(!isset($_SESSION['session'])){
-    header('Location:../ABMssesion/login.php');
+if(!isset($_SESSION['Tsession'])){
+    header('Location:./login.html');
     exit;
 }
 ?>
@@ -222,14 +222,18 @@ if(!isset($_SESSION['session'])){
                         </button>
                         </div>
                         <div class="modal-body">
+
+                        <form method="POST" action="AgregarPDF.php" enctype="multipart/form-data">
                             <div class="form-group">
                                     <label style="color:black">Numero de mesa</label>
-                                    <input type="number" required min="1" class="form-control" id="NroMesaPDF" >
+                                    <input type="number" name="NroMesa" required min="1" class="form-control" id="NroMesaPDF" >
                             </div>
                             <div class="form-group">
                                     <label>Seleccione el archivo</label>
-                                    <input type="file" class="form-control-file" id="filePicker">
+                                    <input type="file" name="archivoPDF" class="form-control-file" id="filePicker">
                             </div>
+                            <button typ="submit" class="btn btn-primary">Enviar</button>
+                            </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" onclick="AddPDF()" class="btn btn-primary">Guardar PDF</button>
@@ -328,7 +332,8 @@ if(!isset($_SESSION['session'])){
         $.ajax({
             type:"get",
             url: "Mozos.php", 
-            success: function(result){                                
+            success: function(result){                
+                console.log(result);
                 var ObjRespuesta = JSON.parse(result);
                 var Appendable = "";
                 var AppendableSelect = "";
